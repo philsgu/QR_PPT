@@ -36,9 +36,9 @@ def position_image(pptx_file, image_path, top_in, left_in):
 
 if __name__ == "__main__":
     # Load the CSV file
-    csv_file = "URLfanfav.csv"  # Replace with your CSV file name
-    pptx_folder = "PPTX_Files"  # Folder containing PPTX files
-    image_folder = "QR_Poster_Images"  # Folder containing image files
+    csv_file = "Judge_URL.csv"  # Replace with your CSV file name
+    pptx_folder = "PPTX_Files_Judging"  # Folder containing PPTX files
+    image_folder = "QR_Poster_Judges"  # Folder containing image files
 
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file)

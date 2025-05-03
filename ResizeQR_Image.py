@@ -2,7 +2,7 @@ from PIL import Image
 import os
 
 # Define the folder containing the images
-folder_path = "/Users/pkimmd/QR_PPT/QR_Poster_Images"
+folder_path = "QR_Poster_Judges"
 
 # Define the target dimensions in inches
 target_width_in = 2.3
