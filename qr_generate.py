@@ -229,24 +229,24 @@ if __name__ == "__main__":
         
     ####--- QR Code Generation ---####
     # Ensure the folder exists
-    output_folder = "QR_Poster_Images"
+    output_folder = "QR_Poster_Judges"
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     # Load the CSV file
-    csv_file = "URLfanfav.csv"  # Ensure the file is in the same directory or provide the full path
+    csv_file = "Judge_URL.csv"  # Ensure the file is in the same directory or provide the full path
     data = pd.read_csv(csv_file)
 
     # Iterate through each row in the CSV
     for index, row in data.iterrows():
         poster_id = row['POSTER_ID']  # Access POSTER_ID column
-        fan_fav_url = row['FanFavURL']  # Access FanFavURL column
+        fan_fav_url = row['JUDGE_SCORE_LINK']  # Access FanFavURL column
 
         # Generate the QR code
         qr_image = create_qr_with_title_and_text(
             data=fan_fav_url,
             title=str(poster_id),
-            text="VOTE FOR ME!",
+            text="JUDGE SCORE LINK",
             qr_target_size=150,  # Set to None to use scale
             font_path=found_font_path,
             qr_border_thickness=5,
