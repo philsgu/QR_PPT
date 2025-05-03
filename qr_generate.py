@@ -2,7 +2,7 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 import segno
 import os
-
+import pandas as pd
 # Helper to handle Pillow version differences for resampling
 try:
     # Pillow 9.1.0 and later
@@ -106,7 +106,7 @@ def create_qr_with_title_and_text(
     # (Font loading code remains the same)
     title_text = title
     scan_text = text
-    title_font_size = 20
+    title_font_size = 24
     bottom_font_size = 20
     try:
         if font_path and os.path.exists(font_path):
@@ -179,17 +179,33 @@ def create_qr_with_title_and_text(
     scan_text_y = qr_y + qr_height + space_below_qr
 
     # --- 8. Draw Elements onto Final Canvas ---
-    draw.rounded_rectangle(
-        [(int(title_box_x0), int(title_box_y0)), (int(title_box_x1), int(title_box_y1))],
-        radius=title_corner_radius,
-        fill='black'
-    )
-    draw.text((int(title_x), int(title_y)), title_text, fill='white', font=title_font)
+    # draw.rounded_rectangle(
+    #     [(int(title_box_x0), int(title_box_y0)), (int(title_box_x1), int(title_box_y1))],
+    #     radius=title_corner_radius,
+    #     fill='black'
+    # )
+    # draw.text((int(title_x), int(title_y)), title_text, fill='white', font=title_font)
+    # img_final_with_border.paste(
+    #     img_qr_content,
+    #     (int(qr_x), int(qr_y)),
+    #     mask=qr_mask
+    # )
+    # draw.text((int(scan_text_x), int(scan_text_y)), scan_text, fill='black', font=bottom_text_font)
+    # return img_final_with_border
+        # --- 8. Draw Elements onto Final Canvas ---
+
+    
+    # Draw only the title text
+    draw.text((int(title_x), int(title_y)), title_text, fill='black', font=title_font)
+    
+    # Paste the QR code
     img_final_with_border.paste(
         img_qr_content,
         (int(qr_x), int(qr_y)),
         mask=qr_mask
     )
+    
+    # Draw the bottom text
     draw.text((int(scan_text_x), int(scan_text_y)), scan_text, fill='black', font=bottom_text_font)
     return img_final_with_border
 
@@ -210,18 +226,37 @@ if __name__ == "__main__":
             break
     if not found_font_path:
         print("Could not find Arial or Liberation Sans font in common locations.")
+        
+    ####--- QR Code Generation ---####
+    # Ensure the folder exists
+    output_folder = "QR_Poster_Images"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
-    qr_image = create_qr_with_title_and_text(
-        data="https://www.example.com",
-        title="18",
-        text="VOTE FOR ME!",
-        qr_target_size=150,  # Set to None to use scale
-        font_path=found_font_path,
-        qr_border_thickness=5,
-        qr_corner_radius=0,
-        edge_margin=15,
-        canvas_border_thickness=2,
-        qr_scale=5
-    )
-    qr_image.save("my_qr_code4.png")
-    qr_image.show()
+    # Load the CSV file
+    csv_file = "URLfanfav.csv"  # Ensure the file is in the same directory or provide the full path
+    data = pd.read_csv(csv_file)
+
+    # Iterate through each row in the CSV
+    for index, row in data.iterrows():
+        poster_id = row['POSTER_ID']  # Access POSTER_ID column
+        fan_fav_url = row['FanFavURL']  # Access FanFavURL column
+
+        # Generate the QR code
+        qr_image = create_qr_with_title_and_text(
+            data=fan_fav_url,
+            title=str(poster_id),
+            text="VOTE FOR ME!",
+            qr_target_size=150,  # Set to None to use scale
+            font_path=found_font_path,
+            qr_border_thickness=5,
+            qr_corner_radius=0,
+            edge_margin=15,
+            canvas_border_thickness=2,
+            qr_scale=5
+        )
+
+        # Save the QR code image
+        output_path = os.path.join(output_folder, f"{poster_id}.png")
+        qr_image.save(output_path)
+        print(f"Saved QR code for POSTER_ID {poster_id} to {output_path}")
